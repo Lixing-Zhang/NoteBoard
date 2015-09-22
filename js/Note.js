@@ -3,22 +3,23 @@
  */
 
 var Note = React.createClass({
-  getInitialState: function() {
-    return { editing : false}
+  getInitialState: function () {
+    return {editing: false}
   },
 
-  edit: function() {
-    this.setState({editing:true});
+  edit: function () {
+    this.setState({editing: true});
   },
 
-  save:function() {
-    this.setState({editing:false});
+  save: function () {
+    this.props.onChange(this.refs.newText.getDOMNode().value, this.props.index);
+    this.setState({editing: false});
   },
-  remove: function() {
-    alert('removing note');
+  remove: function () {
+    this.props.onRemove(this.props.index);
   },
 
-  renderDisplay: function() {
+  renderDisplay: function () {
     return (
         <div className="note">
           <p>{this.props.children}</p>
@@ -30,17 +31,17 @@ var Note = React.createClass({
     );
   },
 
-  renderForm: function() {
+  renderForm: function () {
     return (
         <div className="note">
-            <textarea defaultValue={this.props.children} className="form-control"></textarea>
+          <textarea ref="newText" defaultValue={this.props.children} className="form-control"></textarea>
           <button onClick={this.save} className="btn btn-success btn-sm glyphicon glyphicon-floppy-disk"></button>
         </div>
     );
   },
 
-  render : function() {
-    if(this.state.editing) {
+  render: function () {
+    if (this.state.editing) {
       return this.renderForm();
     } else {
       return this.renderDisplay();
@@ -48,5 +49,59 @@ var Note = React.createClass({
   }
 });
 
+var Board = React.createClass({
+  propTypes: {
+    count: function (props, propName) {
+      if (typeof props[propName] !== 'number') {
+        return new Error('The count property must be a number')
+      }
 
-React.render(<Note>Hello world</Note>, document.getElementById('react-container'));
+
+      if (props[propName] > 100) {
+      }
+      return new Error('Creating ' + props[propName] + ' notes is too much')
+    }
+  },
+
+  getInitialState: function () {
+    return {
+      notes: [
+        'Call Bill',
+        'Call Bills',
+        'Call Bills',
+        'Call Billsss'
+      ]
+    };
+  },
+
+  update: function (newText, i) {
+    var arr = this.state.notes;
+    arr[i] = newText;
+    this.setState({notes: arr});
+  },
+
+  remove: function (i) {
+    var arr = this.state.notes;
+    arr.splice(i, 1);
+    this.setState({notes: arr});
+  },
+
+  eachNote: function (note, i) {
+    return (
+        <Note key={i} index={i} onChange={this.update} onRemove={this.remove}>
+          {note}
+        </Note>
+    )
+  },
+  render: function () {
+    return (
+        <div className="board">
+          {this.state.notes.map(this.eachNote)}
+        </div>
+    );
+  }
+
+});
+
+
+React.render(<Board count={10}>Hello world</Board>, document.getElementById('react-container'));
