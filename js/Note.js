@@ -15,6 +15,10 @@ var Note = React.createClass({
     }
   },
 
+  componentDidMount: function () {
+    $(this.getDOMNode()).draggable();
+  },
+
   randomBetween: function (min, max) {
     return (min + Math.ceil(Math.random() * max));
   },
@@ -62,70 +66,4 @@ var Note = React.createClass({
   }
 });
 
-var Board = React.createClass({
-  propTypes: {
-    count: function (props, propName) {
-      if (typeof props[propName] !== 'number') {
-        return new Error('The count property must be a number')
-      }
 
-
-      if (props[propName] > 100) {
-      }
-      return new Error('Creating ' + props[propName] + ' notes is too much')
-    }
-  },
-
-  getInitialState: function () {
-    return {
-      notes: []
-    };
-  },
-
-  nextId: function()  {
-    this.uniqueId = this.uniqueId || 0;
-    return this.uniqueId++
-  },
-
-  add: function(text) {
-    var arr = this.state.notes;
-    arr.push({
-      id: this.nextId(),
-      note: text
-    });
-    this.setState({notes: arr});
-  },
-
-  update: function (newText, i) {
-    var arr = this.state.notes;
-    arr[i].note = newText;
-    this.setState({notes: arr});
-  },
-
-  remove: function (i) {
-    var arr = this.state.notes;
-    arr.splice(i, 1);
-    this.setState({notes: arr});
-  },
-
-  eachNote: function (note, i) {
-    return (
-        <Note key={note.id} index={i} onChange={this.update} onRemove={this.remove}>
-          {note.note}
-        </Note>
-    )
-  },
-
-  render: function () {
-    return (
-        <div className="board">
-          {this.state.notes.map(this.eachNote)}
-          <button className="btn btn-sm btn-success glyphicon glyphicon-plus" onClick={this.add.bind(null, "New Note")}></button>
-        </div>
-    );
-  }
-
-});
-
-
-React.render(<Board count={10}>Hello world</Board>, document.getElementById('react-container'));
